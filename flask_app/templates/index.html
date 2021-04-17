@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %} Home {% endblock %}
+
+{% block content %}
+
+<style>
+    .content {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row content">
+
+        <div class="search">
+            {% if(current_user.is_authenticated) %}
+
+            <form action="{{ url_for('search') }}" method="POST">
+                <div class="mb-3">
+                    <label for="input" class="form-label">Search Here</label>
+                    <input type="text" class="form-control" id="input" name="input">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+
+            {% endif %}
+        </div>
+
+        {% for book in books['items'] %}
+
+        <div class="card m-2 text-center" style="width: 18rem;">
+            <img src="{{ book['volumeInfo']['imageLinks']['thumbnail'] }}" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">{{ book['volumeInfo']['title'] }}</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><a href="{{ book['volumeInfo']['previewLink'] }}" target="_blank"
+                        class="card-link">More Info</a></li>
+            </ul>
+        </div>
+
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
