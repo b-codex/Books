@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Books</title>
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+        integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/home.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/rating.css') }}" rel="stylesheet">
+    <!-- Custom Fonts -->
+    <link href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}" rel="stylesheet"
+        type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700,400italic,700italic" rel="stylesheet"
+        type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+
+
+</head>
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+    <!-- Navigation -->
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand page-scroll" href="{{ url_for('home') }}">
+                    Books
+                </a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                <ul class="nav navbar-nav" style="flex-direction: row; justify-content: space-between;">
+                    {% if('user' in session) %}
+                    <li>
+                        <a href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a href="{{ url_for('login') }}">Login</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('register') }}">Register</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+    <!-- Intro Header -->
+    <header class="intro-bg">
+        <div class="intro-body">
+            <div class="container mb-4">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+
+                        <form action="/search" method="post">
+                            <div class="search__container mt-4">
+                                <input class="search__input" type="text" placeholder="Search" name="input" id='input'>
+                            </div>
+                        </form>
+
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-12">
+
+                        <div class="card mb-4">
+                            <div class="card-header text-uppercase">
+                                <b>
+                                    {{ info['title'] }}
+                                </b>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">ISBN: {{ info['isbn'] }}</li>
+                                <li class="list-group-item">Year: {{ info['year'] }}</li>
+                                <li class="list-group-item">Author: {{ info['authors'] }}</li>
+
+                                <li class="list-group-item">
+                                    Category: {% if not info['category'] %}
+                                    N\A
+                                    {% else %}
+                                    {{ info['category'] }}
+                                    {% endif %}
+                                </li>
+                                <li class="list-group-item">
+                                    Page Count: {% if not info['pageCount'] %}
+                                    N\A
+                                    {% else %}
+                                    {{ info['pageCount'] }}
+                                    {% endif %}
+                                </li>
+                                <li class="list-group-item">
+                                    Average Rating: {% if not info['averageRating'] %}
+                                    N\A
+                                    {% else %}
+                                    {{ info['averageRating'] }}
+                                    {% endif %}
+                                </li>
+                                <!-- <li class="list-group-item">
+                                    Ratings Count: {% if not info['ratingsCount'] %}
+                                    N\A
+                                    {% else %}
+                                    {{ info['ratingsCount'] }}
+                                    {% endif %}
+                                </li> -->
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        {% if 'user' in session %}
+
+                        <form action="" method="post">
+                            {{ form.hidden_tag() }}
+
+                            <div class="col-12">
+                                <div class="form-group mb-3">
+                                    {{ form.text.label(class="form-label") }}
+
+                                    {% if(form.text.errors) %}
+                                    {{ form.text(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.text.errors %}
+                                        <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    {{ form.text(class="form-control") }}
+                                    {% endif %}
+
+                                </div>
+                                <div class="form-group mb-3">
+                                    <ul class="rate-area">
+                                        Rate &nbsp; &nbsp; &nbsp;
+                                        <input type="radio" id="5-star" name="rating" value="5" /><label for="5-star"
+                                            title="Amazing">5 stars</label>
+                                        <input type="radio" id="4-star" name="rating" value="4" /><label for="4-star"
+                                            title="Good">4 stars</label>
+                                        <input type="radio" id="3-star" name="rating" value="3" /><label for="3-star"
+                                            title="Average">3 stars</label>
+                                        <input type="radio" id="2-star" name="rating" value="2" /><label for="2-star"
+                                            title="Not Good">2 stars</label>
+                                        <input type="radio" id="1-star" name="rating" value="1" /><label for="1-star"
+                                            title="Bad">1 star</label>
+                                    </ul>
+                                </div><br><br>
+                                <div class="form-group my-3">
+                                    {{ form.submit(class="btn btn-info") }}
+                                </div>
+                            </div>
+                        </form>
+
+                        {% else %}
+
+                        <p class="text-muted">
+                            Please login to leave a comment.
+                        </p>
+
+                        {% endif %}
+
+                        <div class="col-12">
+                            {% for comment in comments %}
+                            <div class="card mb-2">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-2">{{ comment[0] }}</h5>
+                                    <h6 class="card-subtitle text-muted" style="font-size: x-small !important;"><i
+                                            class="fa fa-clock-o" aria-hidden="true"></i> {{ comment[3] }}</h6>
+                                    <hr>
+                                    <p class="card-text">
+                                        {{ comment[2] }}
+                                    </p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- jQuery -->
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <!-- Plugin JavaScript -->
+    <script src="{{ url_for('static', filename='js/jquery.easing.min.js') }}"></script>
+    <!-- Custom Theme JavaScript -->
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+        integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+    </script>
+</body>
+
+</html>

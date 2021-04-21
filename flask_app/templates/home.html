@@ -14,7 +14,7 @@
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="{{ url_for('static', filename='css/theme.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/home.css') }}" rel="stylesheet">
     <!-- Custom Fonts -->
     <link href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}" rel="stylesheet"
         type="text/css">
@@ -34,7 +34,7 @@
                     <i class="fa fa-bars"></i>
                 </button>
                 <a class="navbar-brand page-scroll" href="{{ url_for('home') }}">
-                    Books
+                    Books 
                 </a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -59,18 +59,42 @@
         <!-- /.container -->
     </nav>
     <!-- Intro Header -->
-    <header class="intro">
+    <header class="intro-bg">
         <div class="intro-body">
-            <div class="container">
+            <div class="container mb-4">
                 <div class="row">
                     <div class="col-md-8 col-md-offset-2">
 
                         <form action="/search" method="post">
-                            <div class="search__container">
+                            <div class="search__container mt-4">
                                 <input class="search__input" type="text" placeholder="Search" name="input" id='input'>
                             </div>
                         </form>
 
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-12">
+
+                        {% for book in books %}
+
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <a href="{{ url_for('info', id=book[0]) }}">
+                                    <h5 class="card-title">{{ book[1] }}</h5>
+                                </a>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Author: {{ book[2] }}</li>
+                                <li class="list-group-item">Year: {{ book[3] }}</li>
+                                <li class="list-group-item">ISBN: {{ book[0] }}</li>
+                            </ul>
+                        </div>
+                        {% endfor %}
 
                     </div>
                 </div>
