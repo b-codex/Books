@@ -87,6 +87,17 @@ def info(id):
             'ratingsCount': books['items'][0]['volumeInfo']['ratingsCount'],
             'category': books['items'][0]['volumeInfo']['categories'][0]
         }
+
+        localCount = len(find('Rating', "isbn", info['isbn']))
+        x = 0
+        for rating in find('Rating', "isbn", info['isbn']):
+            x += rating[2]
+        localRating = x / localCount
+        apiCount = info['averageRating'] * info['ratingsCount']
+
+        newAverageRating = ((info['averageRating'] * apiCount) + (localRating * localCount)) / (apiCount + localCount)
+        print(newAverageRating)
+
         comments = find_comments(info['isbn'])
 
         if('user' in session):
@@ -96,11 +107,16 @@ def info(id):
                 print(rating)
                 return redirect(url_for('info', id=info['isbn']))
 
-        return render_template('info.html', form=form, comments=comments, info=info)
+        return render_template('info.html', form=form, comments=comments, info=info, newAverageRating=newAverageRating)
     
     else:
         book = findBooks('isbn', id)
-        print(book)
+        localCount = len(find('Rating', "isbn", info['isbn']))
+        x = 0
+        for rating in find('Rating', "isbn", info['isbn']):
+            x += rating[2]
+        localRating = x / localCount
+        
         info = {
             'isbn': book[0][0],
             'title': book[0][1],
@@ -112,8 +128,7 @@ def info(id):
         if('user' in session):
             user = session['user']
             if (form.validate_on_submit()):
-                print(rating)
                 insert_comment("Comments", user[0], info['isbn'], form.text.data)
                 return redirect(url_for('info', id=info['isbn']))
 
-        return render_template('info.html', form=form, comments=comments, info=info)
+        return render_template('info.html', form=form, comments=comments, info=info, localRating=localRating)

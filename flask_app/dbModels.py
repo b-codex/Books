@@ -1,4 +1,5 @@
-import psycopg2, datetime
+import psycopg2
+import datetime
 
 connection = psycopg2.connect(
     host="ec2-3-91-127-228.compute-1.amazonaws.com",
@@ -8,6 +9,7 @@ connection = psycopg2.connect(
 )
 
 cursor = connection.cursor()
+
 
 def create_users_table(tableName):
     create_table = f"""
@@ -21,10 +23,11 @@ def create_users_table(tableName):
     connection.commit()
     print(f"Successfully Created Table {tableName}")
 
+
 def create_ratings_table(tableName):
     command = f"""
         CREATE TABLE {tableName} (
-            username text NOT NULL,
+            username text NOT NULL PRIMARY KEY,
             isbn text NOT NULL,
             rating text NOT NULL
         )
@@ -32,6 +35,7 @@ def create_ratings_table(tableName):
     cursor.execute(command)
     connection.commit()
     print(f"Successfully Created Table {tableName}")
+
 
 def create_comments_table(tableName):
     create_table = f"""
@@ -46,11 +50,13 @@ def create_comments_table(tableName):
     connection.commit()
     print(f"Successfully Created Table {tableName}")
 
+
 def drop_table(tableName):
     command = f"DROP TABLE {tableName}"
     cursor.execute(command)
     connection.commit()
     print(f"Successfully Dropped {tableName}")
+
 
 def insert_into(tableName, username, email, password):
     command = f'''
@@ -59,6 +65,16 @@ def insert_into(tableName, username, email, password):
     cursor.execute(command)
     connection.commit()
     print(f"Successfully Inserted User {email}")
+
+
+def insert_ratings(username, isbn, rating):
+    command = f'''
+        INSERT INTO Ratings (username, isbn, rating) VALUES ('{username}', '{isbn}', '{rating}')
+    '''
+    cursor.execute(command)
+    connection.commit()
+    print(f"Successfully Rated Book {isbn}")
+
 
 def insert_comment(tableName, username, isbn, comment):
     time = datetime.datetime.now()
@@ -70,13 +86,15 @@ def insert_comment(tableName, username, isbn, comment):
     connection.commit()
     print("Successfully Inserted Comment")
 
+
 def find(tableName, query, entry):
     command = f'''
-        SELECT * FROM {tableName} WHERE {query}='{entry}'
+        SELECT * FROM {tableName} WHERE {query} iLIKE '{entry}%'
     '''
     cursor.execute(command)
-    rows = cursor.fetchone()
+    rows = cursor.fetchall()
     return (rows)
+
 
 def findBooks(query, entry):
     command = f'''
@@ -86,6 +104,7 @@ def findBooks(query, entry):
     rows = cursor.fetchall()
     return (rows)
 
+
 def find_comments(isbn):
     command = f'''
         SELECT * FROM Comments WHERE isbn='{isbn}'
@@ -93,6 +112,7 @@ def find_comments(isbn):
     cursor.execute(command)
     rows = cursor.fetchall()
     return (rows)
+
 
 def get_all_books():
     command = f'''
