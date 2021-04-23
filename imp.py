@@ -17,7 +17,7 @@ connection = psycopg2.connect(
 
 cursor = connection.cursor()
 create_table = """
-        CREATE TABLE allBooks (
+        CREATE TABLE IF NOT EXISTS allBooks (
             isbn text NOT NULL PRIMARY KEY,
             title text NOT NULL,
             author text NOT NULL,

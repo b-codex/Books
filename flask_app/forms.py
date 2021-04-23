@@ -1,6 +1,6 @@
 from flask_app.dbModels import find
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField
 from wtforms.fields.simple import TextAreaField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
 

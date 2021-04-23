@@ -13,8 +13,10 @@
         integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
 
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}" type="image/x-icon">
+
     <!-- Custom CSS -->
-    <link href="{{ url_for('static', filename='css/home.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/rating.css') }}" rel="stylesheet">
     <!-- Custom Fonts -->
     <link href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}" rel="stylesheet"
@@ -22,6 +24,84 @@
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700,400italic,700italic" rel="stylesheet"
         type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+
+    <style>
+        img {
+            width: 22rem !important;
+        }
+
+        .content {
+            display: flex !important;
+            flex-direction: row;
+            justify-content: space-around;
+
+        }
+
+        .card-header {
+            font-size: larger;
+            font-weight: bold;
+        }
+
+        @media (max-width:480px) {
+            .content {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .info {
+                margin-top: 5px;
+            }
+        }
+
+        @media (max-width:568px) {
+            .content {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .info {
+                margin-top: 5px;
+            }
+        }
+
+        @media (max-width:600px) {
+            .content {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .info {
+                margin-top: 5px;
+            }
+        }
+
+        @media (max-width:768px) {
+            .content {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .info {
+                margin-top: 5px;
+            }
+        }
+
+        @media (max-width:992px) {
+            .content {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .info {
+                margin-top: 5px;
+            }
+        }
+    </style>
 
 
 </head>
@@ -81,46 +161,32 @@
                 <div class="row">
                     <div class="col-12">
 
-                        <div class="card mb-4">
-                            <div class="card-header text-uppercase">
-                                <b>
-                                    {{ info['title'] }}
-                                </b>
-                            </div>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">ISBN: {{ info['isbn'] }}</li>
-                                <li class="list-group-item">Year: {{ info['year'] }}</li>
-                                <li class="list-group-item">Author: {{ info['authors'] }}</li>
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                        {% for category, message in messages %}
+                        <div class="mt-5 alert alert-{{category}}">{{message}}</div>
+                        {% endfor %}
+                        {% endif %}
+                        {% endwith %}
 
-                                <li class="list-group-item">
-                                    Category: {% if not info['category'] %}
-                                    N\A
-                                    {% else %}
-                                    {{ info['category'] }}
-                                    {% endif %}
-                                </li>
-                                <li class="list-group-item">
-                                    Page Count: {% if not info['pageCount'] %}
-                                    N\A
-                                    {% else %}
-                                    {{ info['pageCount'] }}
-                                    {% endif %}
-                                </li>
-                                <li class="list-group-item">
-                                    Average Rating: {% if not info['averageRating'] %}
-                                    N\A
-                                    {% else %}
-                                    {{ info['averageRating'] }}
-                                    {% endif %}
-                                </li>
-                                <!-- <li class="list-group-item">
-                                    Ratings Count: {% if not info['ratingsCount'] %}
-                                    N\A
-                                    {% else %}
-                                    {{ info['ratingsCount'] }}
-                                    {% endif %}
-                                </li> -->
-                            </ul>
+                        <div class="card my-5">
+                            <div class="content">
+                                <div class="img p-1">
+                                    <img src="{{ info['imgSrc'] }}" class="card-img-top" alt="" srcset="">
+                                </div>
+                                <div class="info w-100" style="padding-left: 3px;padding-right: 3px;">
+                                    <div class="card-header bg-transparent">{{ info['title'] }}</div>
+                                    <div class="card-body text">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">ISBN: {{ info['isbn'] }}</li>
+                                            <li class="list-group-item">Average Rating: {{ newAverageRating }}</li>
+                                            <li class="list-group-item">Author(s): {{ info['authors'] }}</li>
+                                            <li class="list-group-item">Page Count: {{ info['pageCount'] }}</li>
+                                            <li class="list-group-item">Category: {{ info['category'] }}</li>
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -132,46 +198,75 @@
                         <form action="" method="post">
                             {{ form.hidden_tag() }}
 
-                            <div class="col-12">
-                                <div class="form-group mb-3">
-                                    {{ form.text.label(class="form-label") }}
+                            {% if alreadyCommented %}
 
-                                    {% if(form.text.errors) %}
-                                    {{ form.text(class="form-control is-invalid") }}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.text.errors %}
-                                        <span>{{ error }}</span>
-                                        {% endfor %}
+                            <fieldset disabled="disabled">
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        {{ form.text.label(class="form-label") }}
+
+                                        {% if(form.text.errors) %}
+                                        {{ form.text(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.text.errors %}
+                                            <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        {{ form.text(class="form-control") }}
+                                        <div id="" class="form-text text-warning">You have already left a comment.</div>
+                                        {% endif %}
+
                                     </div>
-                                    {% else %}
-                                    {{ form.text(class="form-control") }}
-                                    {% endif %}
+                                </div>
+                            </fieldset>
 
+                            {% else %}
+                            <fieldset>
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        {{ form.text.label(class="form-label") }}
+
+                                        {% if(form.text.errors) %}
+                                        {{ form.text(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.text.errors %}
+                                            <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        {{ form.text(class="form-control") }}
+                                        {% endif %}
+
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <ul class="rate-area border p-2" style="border-radius: 3px; width: 100%;">
+                                            <h6 style="margin: 0;">Rate This Book</h6>
+                                            <input type="radio" id="5-star" name="rating" value="5"><label
+                                                for="5-star" title="Amazing">5 stars</label>
+                                            <input type="radio" id="4-star" name="rating" value="4"><label
+                                                for="4-star" title="Good">4 stars</label>
+                                            <input type="radio" id="3-star" name="rating" value="3"><label
+                                                for="3-star" title="Average">3 stars</label>
+                                            <input type="radio" id="2-star" name="rating" value="2"><label
+                                                for="2-star" title="Not Good">2 stars</label>
+                                            <input type="radio" id="1-star" name="rating" value="1"><label
+                                                for="1-star" title="Bad">1 star</label>
+                                        </ul>
+                                    </div><br><br>
+                                    <div class="form-group my-3 d-flex justify-content-end mt-5">
+                                        {{ form.submit(class="btn btn-info") }}
+                                    </div>
                                 </div>
-                                <div class="form-group mb-3">
-                                    <ul class="rate-area">
-                                        Rate &nbsp; &nbsp; &nbsp;
-                                        <input type="radio" id="5-star" name="rating" value="5" /><label for="5-star"
-                                            title="Amazing">5 stars</label>
-                                        <input type="radio" id="4-star" name="rating" value="4" /><label for="4-star"
-                                            title="Good">4 stars</label>
-                                        <input type="radio" id="3-star" name="rating" value="3" /><label for="3-star"
-                                            title="Average">3 stars</label>
-                                        <input type="radio" id="2-star" name="rating" value="2" /><label for="2-star"
-                                            title="Not Good">2 stars</label>
-                                        <input type="radio" id="1-star" name="rating" value="1" /><label for="1-star"
-                                            title="Bad">1 star</label>
-                                    </ul>
-                                </div><br><br>
-                                <div class="form-group my-3">
-                                    {{ form.submit(class="btn btn-info") }}
-                                </div>
-                            </div>
+                            </fieldset>
+
+                            {% endif %}
+
                         </form>
 
                         {% else %}
 
-                        <p class="text-muted">
+                        <p class="text-warning p-3" style="border: 1px solid #ffc107; border-radius: 3px;">
                             Please login to leave a comment.
                         </p>
 
@@ -188,6 +283,12 @@
                                     <p class="card-text">
                                         {{ comment[2] }}
                                     </p>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="card mb-2">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-2">No Comments Just Yet.</h5>
                                 </div>
                             </div>
                             {% endfor %}

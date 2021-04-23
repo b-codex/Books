@@ -18,5 +18,7 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
 from flask_app import routes
-# create_users_table("Users")
-# create_comments_table("Comments")
+
+create_users_table("Users")
+create_comments_table("Comments")
+create_ratings_table("Ratings")

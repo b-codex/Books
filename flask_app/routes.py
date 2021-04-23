@@ -1,7 +1,7 @@
 from flask import render_template, url_for, flash, redirect, request, session
 from flask_app import app, bcrypt
 from flask_app.forms import Register, Login, Comment
-import requests
+import requests, math
 
 from flask_app.dbModels import *
 
@@ -15,7 +15,7 @@ def search():
     if(request.method == "POST"):
         input = request.form.get('input')
         books = findBooks('title', input)
-        # print(books)
+
         return render_template('home.html', books=books)
 
     if(request.method == "GET"):
@@ -30,12 +30,12 @@ def login():
     if (form.validate_on_submit()):
         user = find("Users", "email", form.email.data)
 
-        if (user and bcrypt.check_password_hash(user[2], form.password.data)):
+        if (user and bcrypt.check_password_hash(user[0][2], form.password.data)):
             session.permanent = True
             session['user'] = user
             return redirect(url_for('home'))
         else:
-            flash('Login Unsuccessful. Please check your credentials.', 'danger')        
+            flash('Login Unsuccessful. Please check your credentials.', 'danger')
 
     return render_template('login.html', form=form)
 
@@ -61,10 +61,10 @@ def logout():
     session.pop('user', None)
     return redirect(url_for('login'))
 
-@app.route('/api/<string:book>')
-def api(book):
-    query = f'{book}'
-    res = requests.get(f'https://api.itbook.store/1.0/search/{query}')
+@app.route('/api/<string:isbn>')
+def api(isbn):
+    query = f'{isbn}'
+    res = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=isbn:{query}')
     return res.json()
 
 @app.route('/info/<string:id>', methods=['GET', 'POST'])
@@ -72,8 +72,16 @@ def info(id):
     res = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=isbn:{id}')
     books = res.json()
 
+    user = ""
+    loggedIn = False
+    if 'user' in session:
+        loggedIn = True
+        user = session['user']
+
     form = Comment()
-    rating = request.form.get('rating')
+    rating_user = request.form.get('rating')
+    if rating_user == None:
+        rating_user = 0
 
     if (books['totalItems'] == 1):    
         info = {
@@ -88,47 +96,82 @@ def info(id):
             'category': books['items'][0]['volumeInfo']['categories'][0]
         }
 
-        localCount = len(find('Rating', "isbn", info['isbn']))
+        users = find_users_commented(info['isbn'])
+        usersArray = []
+        for x in users:
+            usersArray.append(x[0])
+        
+        alreadyCommented = False
+
+        if loggedIn:
+            if (user[0][0] in usersArray):
+                alreadyCommented = True
+
+        newAverageRating = 0
+        localCount = len(find('Ratings', "isbn", info['isbn']))
+        
         x = 0
-        for rating in find('Rating', "isbn", info['isbn']):
-            x += rating[2]
-        localRating = x / localCount
-        apiCount = info['averageRating'] * info['ratingsCount']
+        if find('Ratings', "isbn", info['isbn']):    
+            for rating in find('Ratings', "isbn", info['isbn']):
+                x += int(rating[2])
+            
+            localRating = 0
+            if localCount != 0:
+                localRating = x / localCount
 
-        newAverageRating = ((info['averageRating'] * apiCount) + (localRating * localCount)) / (apiCount + localCount)
-        print(newAverageRating)
-
+            apiCount = info['averageRating'] * info['ratingsCount']
+            newAverageRating = math.ceil(((info['averageRating'] * apiCount) + (localRating * localCount)) / (apiCount + localCount))
+            
         comments = find_comments(info['isbn'])
 
         if('user' in session):
-            user = session['user']
             if (form.validate_on_submit()):
-                insert_comment("Comments", user[0], info['isbn'], form.text.data)
-                print(rating)
+                insert_comment("Comments", user[0][0], info['isbn'], form.text.data)
+                insert_ratings(user[0][0], info['isbn'], rating_user)
+                flash('You have successfully rated & commented on this book.', 'success')
                 return redirect(url_for('info', id=info['isbn']))
 
-        return render_template('info.html', form=form, comments=comments, info=info, newAverageRating=newAverageRating)
+        return render_template('info.html', form=form, comments=comments, info=info, newAverageRating=newAverageRating, alreadyCommented=alreadyCommented)
     
     else:
-        book = findBooks('isbn', id)
-        localCount = len(find('Rating', "isbn", info['isbn']))
-        x = 0
-        for rating in find('Rating', "isbn", info['isbn']):
-            x += rating[2]
-        localRating = x / localCount
         
+        book = findBooks('isbn', id)
         info = {
+            'imgSrc' : 'https://westsiderc.org/wp-content/uploads/2019/08/Image-Not-Available.png',
             'isbn': book[0][0],
             'title': book[0][1],
             'authors': book[0][2],
-            'year': book[0][3]
+            'year': book[0][3],
+            'pageCount' : 'N/A',
+            'category' : 'N/A'
         }
+
+        users = find_users_commented(info['isbn'])
+        usersArray = []
+        for x in users:
+            usersArray.append(x[0])
+        
+        alreadyCommented = False
+        if loggedIn:
+            if (user[0][0] in usersArray):
+                alreadyCommented = True
+
+        localCount = len(find('Ratings', "isbn", info['isbn']))
+        localRating = 0
+        
+        if (localCount != 0):
+            x = 0
+            for rating in find('Ratings', "isbn", info['isbn']):
+                x += int(rating[2])
+            localRating = math.ceil(x / localCount)
         comments = find_comments(info['isbn'])
 
         if('user' in session):
             user = session['user']
             if (form.validate_on_submit()):
-                insert_comment("Comments", user[0], info['isbn'], form.text.data)
+                insert_comment("Comments", user[0][0], info['isbn'], form.text.data)
+                insert_ratings(user[0][0], info['isbn'], rating_user)
+                flash('You have successfully rated & commented on this book.', 'success')
                 return redirect(url_for('info', id=info['isbn']))
 
-        return render_template('info.html', form=form, comments=comments, info=info, localRating=localRating)
+        return render_template('info.html', form=form, comments=comments, info=info, newAverageRating=localRating, alreadyCommented=alreadyCommented)

@@ -13,8 +13,10 @@
         integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
 
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}" type="image/x-icon">
+
     <!-- Custom CSS -->
-    <link href="{{ url_for('static', filename='css/home.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
     <!-- Custom Fonts -->
     <link href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}" rel="stylesheet"
         type="text/css">
@@ -22,6 +24,82 @@
         type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
 
+    <style>
+        img {
+            width: 15rem !important;
+        }
+
+        .card-header {
+            font-size: larger;
+            font-weight: bold;
+        }
+        .content {
+            display: flex !important;
+            flex-direction: row;
+            justify-content: space-around;
+
+        }
+
+        @media (max-width:480px) {
+            .content {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .info {
+                margin-top: 5px;
+            }
+        }
+
+        @media (max-width:568px) {
+            .content {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .info {
+                margin-top: 5px;
+            }
+        }
+
+        @media (max-width:600px) {
+            .content {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .info {
+                margin-top: 5px;
+            }
+        }
+
+        @media (max-width:768px) {
+            .content {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .info {
+                margin-top: 5px;
+            }
+        }
+
+        @media (max-width:992px) {
+            .content {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .info {
+                margin-top: 5px;
+            }
+        }
+    </style>
 
 </head>
 
@@ -34,7 +112,7 @@
                     <i class="fa fa-bars"></i>
                 </button>
                 <a class="navbar-brand page-scroll" href="{{ url_for('home') }}">
-                    Books 
+                    Books
                 </a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -82,18 +160,27 @@
 
                         {% for book in books %}
 
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <a href="{{ url_for('info', id=book[0]) }}">
-                                    <h5 class="card-title">{{ book[1] }}</h5>
-                                </a>
+                        <div class="card my-5">
+                            <div class="content">
+                                <div class="img p-1">
+                                    <a href="{{ url_for('info', id=book[0]) }}">
+                                        <img src="http://covers.openlibrary.org/b/isbn/{{ book[0] }}-M.jpg" class="card-img-top" alt=""
+                                            srcset="">
+                                    </a>
+                                </div>
+                                <div class="info w-100" style="padding-left: 3px;padding-right: 3px;">
+                                    <div class="card-header bg-transparent">{{ book[1] }}</div>
+                                    <div class="card-body text">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">ISBN: {{ book[0] }}</li>
+                                            <li class="list-group-item">Year: {{ book[3] }}</li>
+                                            <li class="list-group-item">Author: {{ book[2] }}</li>
+                                    </div>
+
+                                </div>
                             </div>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">Author: {{ book[2] }}</li>
-                                <li class="list-group-item">Year: {{ book[3] }}</li>
-                                <li class="list-group-item">ISBN: {{ book[0] }}</li>
-                            </ul>
                         </div>
+
                         {% endfor %}
 
                     </div>

@@ -13,33 +13,33 @@ cursor = connection.cursor()
 
 def create_users_table(tableName):
     create_table = f"""
-        CREATE TABLE {tableName} (
-            username text NOT NULL,
-            email text NOT NULL PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS {tableName} (
+            username text NOT NULL UNIQUE,
+            email text NOT NULL PRIMARY KEY UNIQUE,
             password text NOT NULL
         )
     """
     cursor.execute(create_table)
     connection.commit()
-    print(f"Successfully Created Table {tableName}")
+    # print(f"Successfully Created Table {tableName}")
 
 
 def create_ratings_table(tableName):
     command = f"""
-        CREATE TABLE {tableName} (
-            username text NOT NULL PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS {tableName} (
+            username text NOT NULL,
             isbn text NOT NULL,
             rating text NOT NULL
         )
     """
     cursor.execute(command)
     connection.commit()
-    print(f"Successfully Created Table {tableName}")
+    # print(f"Successfully Created Table {tableName}")
 
 
 def create_comments_table(tableName):
     create_table = f"""
-        CREATE TABLE {tableName} (
+        CREATE TABLE IF NOT EXISTS {tableName} (
             username text NOT NULL,
             isbn text NOT NULL,
             comment text NOT NULL, 
@@ -48,14 +48,14 @@ def create_comments_table(tableName):
     """
     cursor.execute(create_table)
     connection.commit()
-    print(f"Successfully Created Table {tableName}")
+    # print(f"Successfully Created Table {tableName}")
 
 
 def drop_table(tableName):
     command = f"DROP TABLE {tableName}"
     cursor.execute(command)
     connection.commit()
-    print(f"Successfully Dropped {tableName}")
+    # print(f"Successfully Dropped {tableName}")
 
 
 def insert_into(tableName, username, email, password):
@@ -64,7 +64,7 @@ def insert_into(tableName, username, email, password):
     '''
     cursor.execute(command)
     connection.commit()
-    print(f"Successfully Inserted User {email}")
+    # print(f"Successfully Inserted User {email}")
 
 
 def insert_ratings(username, isbn, rating):
@@ -73,7 +73,7 @@ def insert_ratings(username, isbn, rating):
     '''
     cursor.execute(command)
     connection.commit()
-    print(f"Successfully Rated Book {isbn}")
+    # print(f"Successfully Rated Book {isbn}")
 
 
 def insert_comment(tableName, username, isbn, comment):
@@ -84,12 +84,12 @@ def insert_comment(tableName, username, isbn, comment):
     '''
     cursor.execute(command)
     connection.commit()
-    print("Successfully Inserted Comment")
+    # print("Successfully Inserted Comment")
 
 
 def find(tableName, query, entry):
     command = f'''
-        SELECT * FROM {tableName} WHERE {query} iLIKE '{entry}%'
+        SELECT * FROM {tableName} WHERE {query} iLIKE '%{entry}%'
     '''
     cursor.execute(command)
     rows = cursor.fetchall()
@@ -98,7 +98,7 @@ def find(tableName, query, entry):
 
 def findBooks(query, entry):
     command = f'''
-        SELECT * FROM allBooks WHERE {query} iLIKE '{entry}%'
+        SELECT * FROM allBooks WHERE {query} iLIKE '%{entry}%'
     '''
     cursor.execute(command)
     rows = cursor.fetchall()
@@ -113,6 +113,11 @@ def find_comments(isbn):
     rows = cursor.fetchall()
     return (rows)
 
+def find_users_commented(isbn):
+    command = f"SELECT * FROM Ratings WHERE isbn='{isbn}'"
+    cursor.execute(command)
+    users = cursor.fetchall()
+    return users
 
 def get_all_books():
     command = f'''
