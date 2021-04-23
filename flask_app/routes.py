@@ -81,7 +81,7 @@ def info(id):
     form = Comment()
     rating_user = request.form.get('rating')
     if rating_user == None:
-        rating_user = 0
+        rating_user = 1
 
     if (books['totalItems'] == 1):    
         info = {
