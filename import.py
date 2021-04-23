@@ -1,39 +1,64 @@
 import csv
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+import psycopg2
 
-app = Flask(__name__)
+connection = psycopg2.connect(
+    host="ec2-3-91-127-228.compute-1.amazonaws.com",
+    database="d8i4kufqlg4jnh",
+    user="wxgncdozyktlun",
+    password="09e460eb130ae553eee73db6d86051c28cab55b6591075e58f635e45a57a9a0e"
+)
 
-app.config['SERVER_NAME'] = "localhost:5000"
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://wxgncdozyktlun:09e460eb130ae553eee73db6d86051c28cab55b6591075e58f635e45a57a9a0e@ec2-3-91-127-228.compute-1.amazonaws.com:5432/d8i4kufqlg4jnh"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# connection = psycopg2.connect(
+#     host="localhost",
+#     database="db",
+#     user="postgres",
+#     password="xd"
+# )
 
-db = SQLAlchemy()
-db.init_app(app)
+cursor = connection.cursor()
+create_table = """
+        CREATE TABLE IF NOT EXISTS allBooks (
+            isbn text NOT NULL PRIMARY KEY,
+            title text NOT NULL,
+            author text NOT NULL,
+            year text NOT NULL
+        )
+"""
+cursor.execute(create_table)
 
-class Book(db.Model):
-    __tablename__ = "Books"
-    isbn = db.Column(db.String, nullable=False, primary_key=True)
-    title = db.Column(db.String, unique=True, nullable=False)
-    author = db.Column(db.String, unique=True, nullable=False)
-    year = db.Column(db.String, unique=True, nullable=False)
+file = open("books.csv")
+reader = csv.reader(file)
 
-def main():
-    db.create_all()
-    file = open("books.csv")
-    reader = csv.reader(file)
+for isbn, title, author, year in reader:
+    i = isbn
+    t = title
+    a = author
+    y = year
+    # print(b)
 
-    for isbn, title, author, year in reader:
-        book = Book(isbn=isbn, title=title, author=author, year=year)
-        db.session.add(book)
-        # print(book.title)
-    
-    db.session.commit()
-    print('\n## DONE ##')
+    if("'" in t or "'" in a):
+        t = t.replace("'", "''")
+        a = a.replace("'", "''")
+        command = f'''
+            INSERT INTO allBooks(isbn, title, author, year) VALUES ('{i}', '{t}', '{a}', '{y}')
+        '''
+        cursor.execute(command)
+        print(f"{t} inserted into the db")
 
-def m():
-    Book.query.all()
+    if("'" not in t and "'" not in a):
+        # print(t)
+        command = f'''
+            INSERT INTO allBooks(isbn, title, author, year) VALUES ('{i}', '{t}', '{a}', '{y}')
+        '''
+        cursor.execute(command)
+        print(f"{t} inserted into the db")
 
-if __name__ == "__main__":
-    with app.app_context():
-        main()
+
+# cursor.execute("SELECT * FROM allBooks")
+# rows = cursor.fetchall()
+
+# for row in rows:
+#     print(row)
+
+cursor.close()
+connection.commit()
