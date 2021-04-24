@@ -23,7 +23,10 @@ I have used many modules in-order to run the app such as wt-forms to create and 
 4. Any user can rate and comment on a book, BUT ONLY ONCE.
 
 # API
-To send an API request you use the link [https://web-prog-project-one.herokuapp.com/api/isbn](#https://web-prog-project-one.herokuapp.com/api/isbn).
+To send an API request you use the link 
+
+[https://web-prog-project-one.herokuapp.com/api/isbn](https://web-prog-project-one.herokuapp.com/api/isbn) 
+
 Note: Don't forget to replace isbn with a books isbn number, either ISBN10 orISBN13.
 The API gives a response as follows:
 
