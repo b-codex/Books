@@ -4,7 +4,7 @@ This project is based on the Google Books API to get information about any book 
 
 # Overview
 You can use this app to find books, see their information, rate & comment on a book.
-Click on this [[link]](#https://web-prog-project-one.herokuapp.com/) to visit the website.
+Click on this [link](#https://web-prog-project-one.herokuapp.com/) to visit the website.
 
 # Getting Started
 ## PostgreSQL
