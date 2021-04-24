@@ -169,7 +169,11 @@
                                     </a>
                                 </div>
                                 <div class="info w-100" style="padding-left: 3px;padding-right: 3px;">
-                                    <div class="card-header bg-transparent">{{ book[1] }}</div>
+                                    <div class="card-header bg-transparent">
+                                        <a href="{{ url_for('info', id=book[0]) }}">
+                                            {{ book[1] }}
+                                        </a>
+                                    </div>
                                     <div class="card-body text">
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item">ISBN: {{ book[0] }}</li>

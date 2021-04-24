@@ -17,6 +17,7 @@
 
     <!-- Custom CSS -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/form-style.css') }}" rel="stylesheet">
     <!-- Custom Fonts -->
     <link href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}" rel="stylesheet"
         type="text/css">
@@ -88,57 +89,63 @@
                 <div class="row">
                     <div class="col-md-8 col-md-offset-2">
 
-                        {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                        {% for category, message in messages %}
-                        <div class="mt-5 alert alert-{{category}}">{{message}}</div>
-                        {% endfor %}
-                        {% endif %}
-                        {% endwith %}
+                        <div class="wrapper">
 
-                        <form action="" method="post">
-                            {{ form.hidden_tag() }}
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                            {% for category, message in messages %}
+                            <div class="mt-5 alert alert-{{category}}">{{message}}</div>
+                            {% endfor %}
+                            {% endif %}
+                            {% endwith %}
 
-                            <legend class="border-bottom mb-4 py-3 text-center">Login</legend>
-                            <div class="form-group mb-3">
-                                {{ form.email.label(class="form-label") }}
+                            <div class="inner" style="border-radius: 30px;">
+                                <form action="" method="post">
+                                    {{ form.hidden_tag() }}
 
-                                {% if(form.email.errors) %}
-                                {{ form.email(class="form-control is-invalid") }}
-                                <div class="invalid-feedback">
-                                    {% for error in form.email.errors %}
-                                    <span>{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                                {% else %}
-                                {{ form.email(class="form-control") }}
-                                {% endif %}
+                                    <h3 class="text-white">Login</h3>
+
+                                    <div class="form-wrapper">
+                                        {{ form.email.label() }}
+
+                                        {% if(form.email.errors) %}
+                                        {{ form.email(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.email.errors %}
+                                            <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        {{ form.email(class="form-control") }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-wrapper">
+                                        {{ form.password.label() }}
+
+                                        {% if(form.password.errors) %}
+                                        {{ form.password(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.password.errors %}
+                                            <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        {{ form.password(class="form-control") }}
+                                        {% endif %}
+                                    </div>
+
+                                    <a href="{{ url_for('login') }}">
+                                        <button class="button">Login</button>
+                                    </a><br>
+
+                                    <!-- <small class="text-white ml-2">
+                                        <a href="#" class="link-info">Forgot Password?</a>
+                                    </small> -->
+
+                                </form>
                             </div>
-                            <div class="form-group mb-3">
-                                {{ form.password.label(class="form-label") }}
+                        </div>
 
-                                {% if(form.password.errors) %}
-                                {{ form.password(class="form-control is-invalid") }}
-                                <div class="invalid-feedback">
-                                    {% for error in form.password.errors %}
-                                    <span>{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                                {% else %}
-                                {{ form.password(class="form-control") }}
-                                {% endif %}
-
-                            </div>
-
-                            <div class="form-group mb-3">
-                                {{ form.submit(class="btn btn-info") }}
-                            </div>
-
-                            <small class="text-white ml-2">
-                                <a href="#" class="link-info">Forgot Password?</a>
-                            </small>
-
-                        </form>
 
 
                     </div>
